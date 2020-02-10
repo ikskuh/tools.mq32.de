@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tilemap Calculator</title>
+  <link rel="stylesheet" href="style.css" type="text/css">
+  <style type="text/css">
+    form input {
+      width: 4em;
+    }
+
+    .mintext {
+      font-size: small;
+      vertical-align: middle;
+      color: #00000080;
+    }
+  </style>
+  <script type="text/javascript">
+    const presets = [
+      [320, 200],
+      [320, 240],
+      [640, 480],
+      [800, 480],
+      [800, 600],
+      [1024, 768],
+      [1280, 720],
+      [1600, 1200],
+      [1920, 1080],
+      [2560, 1440],
+    ];
+
+    function recalc() {
+      const w = Math.floor(document.getElementById('width').value);
+      const h = Math.floor(document.getElementById('height').value);
+      const output = document.getElementById('output');
+
+      while (output.firstChild != null) {
+        output.removeChild(output.firstChild);
+      }
+
+      var start = Math.floor(Math.max(w, h) / 2); // "2 is the smallest possible divier anyways"
+      while (start > 1) {
+
+        function divides(divisor, num) {
+          return (num % divisor) == 0;
+        }
+
+        if (divides(start, w) && divides(start, h)) {
+
+          const cx = w / start;
+          const cy = h / start;
+
+          var c = document.createElement("li");
+          c.innerHTML = String(start) + " <span class=\"mintext\">(" + String(cx) + "×" + String(cy) + ")</span>";
+          output.appendChild(c);
+
+        }
+
+        start -= 1;
+      }
+    }
+
+    function loadPreset(i) {
+      if (i > 0) {
+        document.getElementById('width').value = presets[i - 1][0];
+        document.getElementById('height').value = presets[i - 1][1];
+        recalc();
+      }
+    }
+
+    function initializePresets() {
+      const item = document.getElementById("preset");
+      for (const i in presets) {
+        const o = document.createElement("option");
+        o.innerText = String(presets[i][0]) + "×" + String(presets[i][1]);
+        o.setAttribute("width", presets[i][0]);
+        o.setAttribute("height", presets[i][1]);
+        item.appendChild(o);
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <a id="nav-back" href="index.htm">Back</a>
+  <h1>Tilemap Calculator</h1>
+
+  <p>Given a screen resolution, this tool outputs all possible square tile sizes that
+    will tile the resolution with an integer number of tiles.
+  </p>
+
+  <p>
+    <form>
+      Resolution:
+      <input type="number" id="width" value="320" oninput="recalc()">
+      ×
+      <input type="number" id="height" value="240" oninput="recalc()">
+      (
+      Preset:
+      <select id="preset" onchange="loadPreset(this.selectedIndex)">
+        <option>Choose preset…</option>
+      </select>
+      )
+    </form>
+  </p>
+  <p>
+    Possible tile sizes <span class="mintext">(and map resolution)</span>:
+    <ul id="output">
+      dummy
+    </ul>
+  </p>
+  <script type="text/javascript">
+    initializePresets();
+    recalc();
+  </script>
+</body>
+
+</html>
